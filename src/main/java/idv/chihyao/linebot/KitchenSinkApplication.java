@@ -19,9 +19,17 @@ package idv.chihyao.linebot;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 
+import idv.chihyao.linebot.provider.image.RandomImageProvider;
+import idv.chihyao.linebot.provider.image.Type;
+import idv.chihyao.linebot.provider.image.impl.AnimeRandomImageProvider;
+import idv.chihyao.linebot.provider.image.impl.BitchRandomImageProvider;
+import idv.chihyao.linebot.provider.image.impl.DogRandomImageProvider;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class KitchenSinkApplication {
@@ -30,6 +38,32 @@ public class KitchenSinkApplication {
     public static void main(String[] args) throws IOException {
         downloadedContentDir = Files.createTempDirectory("line-bot");
         SpringApplication.run(KitchenSinkApplication.class, args);
+    }
+
+    @Bean
+    public Map<Type, RandomImageProvider> randomImageProviderMap() {
+        Map<Type, RandomImageProvider> randomImageProviderMap = new HashMap<>();
+
+        randomImageProviderMap.put(Type.狗狗, dogRandomImageProvider());
+        randomImageProviderMap.put(Type.狗狗, dogRandomImageProvider());
+        randomImageProviderMap.put(Type.狗狗, dogRandomImageProvider());
+
+        return randomImageProviderMap;
+    }
+
+    @Bean
+    public RandomImageProvider dogRandomImageProvider() {
+        return new DogRandomImageProvider();
+    }
+
+    @Bean
+    public RandomImageProvider bitchRandomImageProvider() {
+        return new BitchRandomImageProvider();
+    }
+
+    @Bean
+    public RandomImageProvider animeRandomImageProvider() {
+        return new AnimeRandomImageProvider();
     }
 
 }
