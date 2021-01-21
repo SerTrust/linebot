@@ -24,10 +24,10 @@ public class PhotoController {
 //        }
 //    }
 
-    @GetMapping("/image/{pathname}/{size}")
-    public void getImage(@PathVariable("pathname") String pathname, @PathVariable("size") String size, HttpServletResponse response) {
+    @GetMapping("/image/{filename}")
+    public void getImage(@PathVariable("filename") String filename, HttpServletResponse response) {
 
-        File file = Paths.get("D:/image/"+pathname).toFile();
+        File file = Paths.get("D:/image/").toFile();
 
         if (file.isDirectory() != true) new Exception();
 
@@ -35,7 +35,7 @@ public class PhotoController {
 
         File targetFile = null;
         for (File file1 : files) {
-            if (file1.getName().equals(size)) {
+            if (file1.getName().equals(filename)) {
                 targetFile = file1;
                 break;
             }

@@ -43,6 +43,7 @@ public class ImageUtils {
         }
         // And as before now you can use URL and URLConnection
         URLConnection connection = url.openConnection();
+        connection.setRequestProperty("User-Agent", "Mozilla 5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.11) ");
         InputStream is = connection.getInputStream();
 
         // .. then download the file

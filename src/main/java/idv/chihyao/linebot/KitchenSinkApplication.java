@@ -16,20 +16,23 @@
 
 package idv.chihyao.linebot;
 
+import idv.chihyao.linebot.message.ReplyOperations;
+import idv.chihyao.linebot.message.impl.ReplyOperationsImpl;
+import idv.chihyao.linebot.provider.image.RandomImageProvider;
+import idv.chihyao.linebot.provider.image.Type;
+import idv.chihyao.linebot.provider.image.impl.AnimeRandomImageProvider;
+import idv.chihyao.linebot.provider.image.impl.BitchRandomImageProvider;
+import idv.chihyao.linebot.provider.image.impl.CatRandomImageProvider;
+import idv.chihyao.linebot.provider.image.impl.DogRandomImageProvider;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-
-import idv.chihyao.linebot.provider.image.RandomImageProvider;
-import idv.chihyao.linebot.provider.image.Type;
-import idv.chihyao.linebot.provider.image.impl.AnimeRandomImageProvider;
-import idv.chihyao.linebot.provider.image.impl.BitchRandomImageProvider;
-import idv.chihyao.linebot.provider.image.impl.DogRandomImageProvider;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class KitchenSinkApplication {
@@ -45,8 +48,9 @@ public class KitchenSinkApplication {
         Map<Type, RandomImageProvider> randomImageProviderMap = new HashMap<>();
 
         randomImageProviderMap.put(Type.狗狗, dogRandomImageProvider());
-        randomImageProviderMap.put(Type.狗狗, dogRandomImageProvider());
-        randomImageProviderMap.put(Type.狗狗, dogRandomImageProvider());
+        randomImageProviderMap.put(Type.美女, bitchRandomImageProvider());
+        randomImageProviderMap.put(Type.動漫, animeRandomImageProvider());
+        randomImageProviderMap.put(Type.貓貓, catRandomImageProvider());
 
         return randomImageProviderMap;
     }
@@ -64,6 +68,18 @@ public class KitchenSinkApplication {
     @Bean
     public RandomImageProvider animeRandomImageProvider() {
         return new AnimeRandomImageProvider();
+    }
+
+    @Bean
+    public RandomImageProvider catRandomImageProvider() {
+        return new CatRandomImageProvider();
+    }
+
+    @Bean
+    public ReplyOperations replyOperationsImpl() {
+        ReplyOperationsImpl replyOperations = new ReplyOperationsImpl();
+        replyOperations.setHost("6283d4c690dc.ngrok.io");
+        return replyOperations;
     }
 
 }

@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 import static java.util.Collections.singletonList;
 
 @Slf4j
-@Component
 public class ReplyOperationsImpl implements ReplyOperations {
 
 
@@ -38,6 +37,10 @@ public class ReplyOperationsImpl implements ReplyOperations {
 
     private static final String SCHEME = "https";
     private String host;
+
+    public void setHost(String host) {
+        this.host = host;
+    }
 
     @Override
     public void replyText(@NonNull String replyToken, @NonNull String message) {

@@ -62,6 +62,7 @@ public class KitchenSinkController {
         this.randomImageProviderMap = randomImageProviderMap;
     }
 
+    @Autowired
     public void setReplyOperations(ReplyOperations replyOperations) {
         this.replyOperations = replyOperations;
     }
@@ -96,7 +97,6 @@ public class KitchenSinkController {
         switch (text) {
             default:
                 log.info("Returns echo message {}: {}", replyToken, text);
-                boolean replyOK = false;
                 Map<String, String[]> map = textMap.getTextMap();
                 Set set = map.keySet();
                 for (Object o : set) {
@@ -108,7 +108,6 @@ public class KitchenSinkController {
                         this.replyText(
                                 replyToken, sendText
                         );
-                        replyOK = true;
                         break;
                     }
                 }
@@ -118,22 +117,10 @@ public class KitchenSinkController {
                 }
                 if (text.contains("狗狗")) {
                     String path = randomImageProviderMap.get(Type.狗狗).getRandomImages();
-                    replyOperations.replyImage(replyToken, new URI(path), new URI(path));
+                    replyOperations.replyImage(replyToken, path, path);
                     break;
                 } else if (text.contains("美女") || text.contains("母狗")) {
                     String path = randomImageProviderMap.get(Type.美女).getRandomImages();
-//                    copyImage(MessageFormat.format("/image/rich{0}/bitch.jpg", num));
-//                    this.reply(replyToken, ImagemapMessage
-//                            .builder()
-//                            .baseUrl(createUri(MessageFormat.format("/image/rich{0}/", num)))
-////                            .baseUrl(createUri("/static/rich/"))
-//                            .altText("阿魚傳送了圖片")
-//                            .baseSize(new ImagemapBaseSize(1040, 800))
-//                            .actions(Arrays.asList(URIImagemapAction.builder()
-//                                    .linkUri(createUri(MessageFormat.format("/image/rich{0}/bitch.jpg", num++)).toString())
-//                                    .area(new ImagemapArea(0, 0, 800, 1040))
-//                                    .build()))
-//                            .build());
                     replyOperations.replyImage(replyToken, path, path);
                     break;
                 } else if (text.contains("臭宅")) {
@@ -141,13 +128,11 @@ public class KitchenSinkController {
                     replyOperations.replyImage(replyToken, path, path);
                     break;
                 } else if (text.contains("貓貓")) {
+                    String path = randomImageProviderMap.get(Type.貓貓).getRandomImages();
+                    replyOperations.replyImage(replyToken, path, path);
                     break;
                 }
 //            	String emoji = String.valueOf(Character.toChars(0x100078)); 表情符號使用方式
-//                if (!replyOK)
-//                    this.replyText(
-//                            replyToken, "這超過我能理解的程度了 " + String.valueOf(Character.toChars(0x100083))
-//                    );
                 break;
         }
     }
