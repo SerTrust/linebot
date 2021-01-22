@@ -16,9 +16,9 @@
 
 package idv.chihyao.linebot.web;
 
-import com.linecorp.bot.model.event.*;
 import com.linecorp.bot.model.event.Event;
-import com.linecorp.bot.model.event.message.*;
+import com.linecorp.bot.model.event.MessageEvent;
+import com.linecorp.bot.model.event.message.TextMessageContent;
 import com.linecorp.bot.spring.boot.annotation.EventMapping;
 import com.linecorp.bot.spring.boot.annotation.LineMessageHandler;
 import idv.chihyao.linebot.message.ReplyOperations;
@@ -27,22 +27,14 @@ import idv.chihyao.linebot.object.WeatherTownship;
 import idv.chihyao.linebot.provider.image.RandomImageProvider;
 import idv.chihyao.linebot.provider.image.Type;
 import lombok.NonNull;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
-import net.sf.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.file.*;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 
 @Slf4j
 @LineMessageHandler
@@ -53,9 +45,10 @@ public class KitchenSinkController {
 
     private ReplyOperations replyOperations;
 
-    public static int num = 0;
-
     Map<Type, RandomImageProvider> randomImageProviderMap;
+
+    @Value("${common.config.web.imagePath}")
+    private String imagePath;
 
     @Autowired
     public void setRandomImageProviderMap(Map<Type, RandomImageProvider> randomImageProviderMap) {
@@ -116,20 +109,24 @@ public class KitchenSinkController {
                     break;
                 }
                 if (text.contains("狗狗")) {
-                    String path = randomImageProviderMap.get(Type.狗狗).getRandomImages();
-                    replyOperations.replyImage(replyToken, path, path);
+                    String fileName = randomImageProviderMap.get(Type.狗狗).getRandomImages();
+                    String imgPath = MessageFormat.format("{0}/{1}", imagePath, fileName);
+                    replyOperations.replyImage(replyToken, imgPath, imgPath);
                     break;
                 } else if (text.contains("美女") || text.contains("母狗")) {
-                    String path = randomImageProviderMap.get(Type.美女).getRandomImages();
-                    replyOperations.replyImage(replyToken, path, path);
+                    String fileName = randomImageProviderMap.get(Type.美女).getRandomImages();
+                    String imgPath = MessageFormat.format("{0}/{1}", imagePath, fileName);
+                    replyOperations.replyImage(replyToken, imgPath, imgPath);
                     break;
                 } else if (text.contains("臭宅")) {
-                    String path = randomImageProviderMap.get(Type.動漫).getRandomImages();
-                    replyOperations.replyImage(replyToken, path, path);
+                    String fileName = randomImageProviderMap.get(Type.動漫).getRandomImages();
+                    String imgPath = MessageFormat.format("{0}/{1}", imagePath, fileName);
+                    replyOperations.replyImage(replyToken, imgPath, imgPath);
                     break;
                 } else if (text.contains("貓貓")) {
-                    String path = randomImageProviderMap.get(Type.貓貓).getRandomImages();
-                    replyOperations.replyImage(replyToken, path, path);
+                    String fileName = randomImageProviderMap.get(Type.貓貓).getRandomImages();
+                    String imgPath = MessageFormat.format("{0}/{1}", imagePath, fileName);
+                    replyOperations.replyImage(replyToken, imgPath, imgPath);
                     break;
                 }
 //            	String emoji = String.valueOf(Character.toChars(0x100078)); 表情符號使用方式
@@ -137,138 +134,99 @@ public class KitchenSinkController {
         }
     }
 
-    public String getJsonUrl() {
-        URL url = null;
-        try {
-            url = new URL("https://api.thecatapi.com/v1/images/search");
 
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.connect();
+//    private void copyImage(String path) {
+//        File file = new File(path);
+//        if (!file.exists()) {
+//            System.out.println("檔案不存在!!!");
+//            return;
+//        }
+//        try {
+//            int width = 320, height = 480; /* set the width and height here */
+//            BufferedImage inputImage = ImageIO.read(file);
+//            if (inputImage.getWidth() > inputImage.getHeight()) {
+//                width = 480;
+//                height = 320;
+//            }
+//            BufferedImage outputImage = new BufferedImage(width, height,
+//                    BufferedImage.TYPE_INT_RGB);
+//            Graphics2D g = outputImage.createGraphics();
+//            g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+//                    RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+//            g.clearRect(0, 0, width, height);
+//            g.drawImage(inputImage, 0, 0, width, height, null);
+//            g.dispose();
+//            ImageIO.write(outputImage, "jpg", new File(MessageFormat.format("D:/image/rich{0}/240", num)));
+//            ImageIO.write(outputImage, "jpg", new File(MessageFormat.format("D:/image/rich{0}/300", num)));
+//            ImageIO.write(outputImage, "jpg", new File(MessageFormat.format("D:/image/rich{0}/460", num)));
+//            ImageIO.write(outputImage, "jpg", new File(MessageFormat.format("D:/image/rich{0}/700", num)));
+//            ImageIO.write(outputImage, "jpg", new File(MessageFormat.format("D:/image/rich{0}/1040", num)));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
-            int responsecode = conn.getResponseCode();
+//    private String getURL(String url) {
+//        String result = "";
+//        try {
+//            URL httpUrl = new URL(url);
+//            URLConnection urlc = httpUrl.openConnection();
+//            urlc.setRequestProperty("User-Agent", "Mozilla 5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.11) ");
+//            InputStream is = urlc.getInputStream();
+//            try {
+//                BufferedReader rd = new BufferedReader(new InputStreamReader(is, "utf-8")); //避免中文亂碼問題
+//                StringBuilder sb = new StringBuilder();
+//                int cp;
+//                while ((cp = rd.read()) != -1) {
+//                    sb.append((char) cp);
+//                }
+//                result = sb.toString().substring(2, sb.length() - 2);
+//                System.out.println("result = " + result);
+//            } catch (Exception ex) {
+//                ex.printStackTrace();
+//            } finally {
+//                is.close();
+//            }
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+//        return result;
+//    }
 
-            if (responsecode != 200) {
-                throw new RuntimeException("HttpResponseCode: " + responsecode);
-            } else {
-
-                String inline = "";
-                Scanner scanner = new Scanner(url.openStream());
-
-                //Write all the JSON data into a string using a scanner
-                while (scanner.hasNext()) {
-                    inline += scanner.nextLine();
-                }
-
-                //Close the scanner
-                scanner.close();
-
-                //Using the JSON simple library parse the string into a json object
-                JSONArray array = JSONArray.fromObject(inline);
-//				for(int i=0;i<array.size();i++){
-                Map map = (Map) array.get(0);
-                return (String) map.get("url");
-//				}
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    private void copyImage(String path) {
-        File file = new File(path);
-        if (!file.exists()) {
-            System.out.println("檔案不存在!!!");
-            return;
-        }
-        try {
-            int width = 320, height = 480; /* set the width and height here */
-            BufferedImage inputImage = ImageIO.read(file);
-            if (inputImage.getWidth() > inputImage.getHeight()) {
-                width = 480;
-                height = 320;
-            }
-            BufferedImage outputImage = new BufferedImage(width, height,
-                    BufferedImage.TYPE_INT_RGB);
-            Graphics2D g = outputImage.createGraphics();
-            g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                    RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-            g.clearRect(0, 0, width, height);
-            g.drawImage(inputImage, 0, 0, width, height, null);
-            g.dispose();
-            ImageIO.write(outputImage, "jpg", new File(MessageFormat.format("D:/image/rich{0}/240", num)));
-            ImageIO.write(outputImage, "jpg", new File(MessageFormat.format("D:/image/rich{0}/300", num)));
-            ImageIO.write(outputImage, "jpg", new File(MessageFormat.format("D:/image/rich{0}/460", num)));
-            ImageIO.write(outputImage, "jpg", new File(MessageFormat.format("D:/image/rich{0}/700", num)));
-            ImageIO.write(outputImage, "jpg", new File(MessageFormat.format("D:/image/rich{0}/1040", num)));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private String getURL(String url) {
-        String result = "";
-        try {
-            URL httpUrl = new URL(url);
-            URLConnection urlc = httpUrl.openConnection();
-            urlc.setRequestProperty("User-Agent", "Mozilla 5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.11) ");
-            InputStream is = urlc.getInputStream();
-            try {
-                BufferedReader rd = new BufferedReader(new InputStreamReader(is, "utf-8")); //避免中文亂碼問題
-                StringBuilder sb = new StringBuilder();
-                int cp;
-                while ((cp = rd.read()) != -1) {
-                    sb.append((char) cp);
-                }
-                result = sb.toString().substring(2, sb.length() - 2);
-                System.out.println("result = " + result);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            } finally {
-                is.close();
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return result;
-    }
-
-    private void downloadPhoto(String url) {
-        String path = MessageFormat.format("D:/image/rich{0}/", num);
-//        String path = "D:/git/lineBot/linebot2/src/main/resources/static/rich/";
-        //如果資料夾不存在，則建立新的的資料夾
-        File file = new File(path);
-        if (!file.exists()) file.mkdirs();
-
-        FileOutputStream fileOut = null;
-        InputStream inputStream = null;
-        try {
-            URL httpUrl = new URL(url);
-            URLConnection urlc = httpUrl.openConnection();
-            urlc.setRequestProperty("User-Agent", "Mozilla 5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.11) ");
-            inputStream = urlc.getInputStream();
-            BufferedInputStream bis = new BufferedInputStream(inputStream);
-
-            //寫入到檔案（注意檔案儲存路徑的後面一定要加上檔案的名稱）
-            fileOut = new FileOutputStream(path + "dog.jpg");
-            BufferedOutputStream bos = new BufferedOutputStream(fileOut);
-
-            byte[] buf = new byte[4096];
-            int length = bis.read(buf);
-            //儲存檔案
-            while (length != -1) {
-                bos.write(buf, 0, length);
-                length = bis.read(buf);
-            }
-            bos.close();
-            bis.close();
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
-
-    }
+//    private void downloadPhoto(String url) {
+//        String path = MessageFormat.format("D:/image/rich{0}/", num);
+////        String path = "D:/git/lineBot/linebot2/src/main/resources/static/rich/";
+//        //如果資料夾不存在，則建立新的的資料夾
+//        File file = new File(path);
+//        if (!file.exists()) file.mkdirs();
+//
+//        FileOutputStream fileOut = null;
+//        InputStream inputStream = null;
+//        try {
+//            URL httpUrl = new URL(url);
+//            URLConnection urlc = httpUrl.openConnection();
+//            urlc.setRequestProperty("User-Agent", "Mozilla 5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.11) ");
+//            inputStream = urlc.getInputStream();
+//            BufferedInputStream bis = new BufferedInputStream(inputStream);
+//
+//            //寫入到檔案（注意檔案儲存路徑的後面一定要加上檔案的名稱）
+//            fileOut = new FileOutputStream(path + "dog.jpg");
+//            BufferedOutputStream bos = new BufferedOutputStream(fileOut);
+//
+//            byte[] buf = new byte[4096];
+//            int length = bis.read(buf);
+//            //儲存檔案
+//            while (length != -1) {
+//                bos.write(buf, 0, length);
+//                length = bis.read(buf);
+//            }
+//            bos.close();
+//            bis.close();
+//        } catch (Exception exception) {
+//            exception.printStackTrace();
+//        }
+//
+//    }
 
 //    public void downloadImage(String imagePath, URL url) throws IOException {
 //        File file = new File(imagePath);
@@ -334,9 +292,9 @@ public class KitchenSinkController {
 //                createUri("/downloaded/" + tempFile.getFileName()));
 //    }
 
-    @Value
-    private static class DownloadedContent {
-        Path path;
-        URI uri;
-    }
+//    @Value
+//    private static class DownloadedContent {
+//        Path path;
+//        URI uri;
+//    }
 }

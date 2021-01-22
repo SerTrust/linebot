@@ -1,7 +1,6 @@
 package idv.chihyao.linebot.message.impl;
 
 import com.google.common.base.Preconditions;
-import com.linecorp.bot.client.LineBlobClient;
 import com.linecorp.bot.client.LineMessagingClient;
 import com.linecorp.bot.model.ReplyMessage;
 import com.linecorp.bot.model.message.ImageMessage;
@@ -13,11 +12,11 @@ import idv.chihyao.linebot.message.ReplyOperations;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -25,21 +24,29 @@ import java.util.stream.Collectors;
 import static java.util.Collections.singletonList;
 
 @Slf4j
+@Component
 public class ReplyOperationsImpl implements ReplyOperations {
 
 
     public LineMessagingClient lineMessagingClient;
+    @Value("${common.config.web.scheme}")
+    private String host;
+    @Value("${common.config.web.hostname}")
+    private String scheme;
 
     @Autowired
     public void setLineMessagingClient(LineMessagingClient lineMessagingClient) {
         this.lineMessagingClient = lineMessagingClient;
     }
 
-    private static final String SCHEME = "https";
-    private String host;
-
+    @Value(value = "${common.config.web.hostname}")
     public void setHost(String host) {
         this.host = host;
+    }
+
+    @Value(value = "${common.config.web.scheme}")
+    public void setScheme(String scheme) {
+        this.scheme = scheme;
     }
 
     @Override
@@ -97,7 +104,7 @@ public class ReplyOperationsImpl implements ReplyOperations {
 
     private URI createUri(String path) {
         return ServletUriComponentsBuilder.newInstance()
-                .scheme(SCHEME)
+                .scheme(scheme)
                 .host(host)
                 .path(path)
                 .build()

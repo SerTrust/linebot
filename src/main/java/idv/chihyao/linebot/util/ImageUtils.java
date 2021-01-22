@@ -48,6 +48,9 @@ public class ImageUtils {
 
         // .. then download the file
         try (InputStream in = is) {
+//            Path path = Paths.get(imagePath);
+//            if (!Files.exists(path.getParent())) Files.createDirectories(path);
+//            if (!Files.exists(path) || !Files.isDirectory(path))
             Files.copy(in, Paths.get(imagePath), StandardCopyOption.REPLACE_EXISTING);
         }
     }

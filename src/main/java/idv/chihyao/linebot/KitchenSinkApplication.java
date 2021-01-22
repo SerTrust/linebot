@@ -20,13 +20,15 @@ import idv.chihyao.linebot.message.ReplyOperations;
 import idv.chihyao.linebot.message.impl.ReplyOperationsImpl;
 import idv.chihyao.linebot.provider.image.RandomImageProvider;
 import idv.chihyao.linebot.provider.image.Type;
-import idv.chihyao.linebot.provider.image.impl.AnimeRandomImageProvider;
-import idv.chihyao.linebot.provider.image.impl.BitchRandomImageProvider;
-import idv.chihyao.linebot.provider.image.impl.CatRandomImageProvider;
-import idv.chihyao.linebot.provider.image.impl.DogRandomImageProvider;
+import idv.chihyao.linebot.provider.image.impl.AnimeRemoteRandomImageProvider;
+import idv.chihyao.linebot.provider.image.impl.BitchRemoteRandomImageProvider;
+import idv.chihyao.linebot.provider.image.impl.CatRemoteRandomImageProvider;
+import idv.chihyao.linebot.provider.image.impl.DogRemoteRandomImageProvider;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -47,39 +49,66 @@ public class KitchenSinkApplication {
     public Map<Type, RandomImageProvider> randomImageProviderMap() {
         Map<Type, RandomImageProvider> randomImageProviderMap = new HashMap<>();
 
-        randomImageProviderMap.put(Type.狗狗, dogRandomImageProvider());
-        randomImageProviderMap.put(Type.美女, bitchRandomImageProvider());
-        randomImageProviderMap.put(Type.動漫, animeRandomImageProvider());
-        randomImageProviderMap.put(Type.貓貓, catRandomImageProvider());
+        randomImageProviderMap.put(Type.狗狗, dogRemoteRandomImageProvider());
+        randomImageProviderMap.put(Type.美女, bitchRemoteRandomImageProvider());
+        randomImageProviderMap.put(Type.動漫, animeRemoteRandomImageProvider());
+        randomImageProviderMap.put(Type.貓貓, catRemoteRandomImageProvider());
 
         return randomImageProviderMap;
     }
 
     @Bean
-    public RandomImageProvider dogRandomImageProvider() {
-        return new DogRandomImageProvider();
+    public Map<Type, String> imageApiCollector() {
+        Map<Type, String> imageApiCollector = new HashMap<>();
+
+        imageApiCollector.put(Type.狗狗, "http://shibe.online/api/shibes?count=1");
+        imageApiCollector.put(Type.美女, "https://api.nmb.show/xiaojiejie1.php");
+        imageApiCollector.put(Type.動漫, "https://api.catyo.cn/rimg/2dyrimg.php");
+        imageApiCollector.put(Type.貓貓, "https://api.thecatapi.com/v1/images/search");
+        
+        return imageApiCollector;
     }
 
     @Bean
-    public RandomImageProvider bitchRandomImageProvider() {
-        return new BitchRandomImageProvider();
+    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+        // Do any additional configuration here
+        return builder.build();
     }
 
     @Bean
-    public RandomImageProvider animeRandomImageProvider() {
-        return new AnimeRandomImageProvider();
+    public RandomImageProvider dogRemoteRandomImageProvider() {
+        DogRemoteRandomImageProvider dogRemoteRandomImageProvider = new DogRemoteRandomImageProvider();
+        dogRemoteRandomImageProvider.setRemotePath(imageApiCollector().get(Type.狗狗));
+        return dogRemoteRandomImageProvider;
     }
 
     @Bean
-    public RandomImageProvider catRandomImageProvider() {
-        return new CatRandomImageProvider();
+    public RandomImageProvider bitchRemoteRandomImageProvider() {
+        BitchRemoteRandomImageProvider bitchRemoteRandomImageProvider = new BitchRemoteRandomImageProvider();
+        bitchRemoteRandomImageProvider.setRemotePath(imageApiCollector().get(Type.美女));
+        return bitchRemoteRandomImageProvider;
     }
 
     @Bean
-    public ReplyOperations replyOperationsImpl() {
-        ReplyOperationsImpl replyOperations = new ReplyOperationsImpl();
-        replyOperations.setHost("6283d4c690dc.ngrok.io");
-        return replyOperations;
+    public RandomImageProvider animeRemoteRandomImageProvider() {
+        AnimeRemoteRandomImageProvider animeRemoteRandomImageProvider = new AnimeRemoteRandomImageProvider();
+        animeRemoteRandomImageProvider.setRemotePath(imageApiCollector().get(Type.動漫));
+        return animeRemoteRandomImageProvider;
     }
+
+    @Bean
+    public RandomImageProvider catRemoteRandomImageProvider() {
+        CatRemoteRandomImageProvider catRemoteRandomImageProvider = new CatRemoteRandomImageProvider();
+        catRemoteRandomImageProvider.setRemotePath(imageApiCollector().get(Type.貓貓));
+        return catRemoteRandomImageProvider;
+
+    }
+
+//    @Bean
+//    public ReplyOperations replyOperationsImpl() {
+//        ReplyOperationsImpl replyOperations = new ReplyOperationsImpl();
+//        replyOperations.setHost("0f47db7a133c.ngrok.io");
+//        return replyOperations;
+//    }
 
 }

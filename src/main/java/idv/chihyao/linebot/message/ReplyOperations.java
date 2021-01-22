@@ -18,14 +18,4 @@ public interface ReplyOperations {
 
     void replyCarousel(@NonNull String replyToken, @NonNull String altText, @NonNull CarouselTemplate carouselTemplate);
 
-
-//    void reply(@NonNull String replyToken, @NonNull Message message);
-//
-//    void reply(@NonNull String replyToken, @NonNull List<Message> messages);
-//
-//    void reply(@NonNull String replyToken,
-//               @NonNull List<Message> messages,
-//               boolean notificationDisabled);
-
-
 }

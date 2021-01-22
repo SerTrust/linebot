@@ -1,45 +1,34 @@
 package idv.chihyao.linebot.web;
 
+import com.google.common.base.Preconditions;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
-import org.springframework.http.HttpRequest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 
 @RestController
 public class PhotoController {
-//    @GetMapping("/image/{pathname}/{size}")
-//    public void getImage(HttpServletRequest request, HttpServletResponse response) {
-//        try (ServletInputStream inputStream = request.getInputStream()) {
-//            response.setContentType(MediaType.IMAGE_JPEG_VALUE);
-//            IOUtils.copy(inputStream, response.getOutputStream());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
-    @GetMapping("/image/{filename}")
+    private String downloadPath;
+
+    @Value("${common.config.local.random-image-location}")
+    public void setDownloadPath(String downloadPath) {
+        this.downloadPath = downloadPath;
+    }
+
+    @GetMapping("/${common.config.web.imagePath}/{filename}")
     public void getImage(@PathVariable("filename") String filename, HttpServletResponse response) {
+        Preconditions.checkState(Files.exists(Paths.get(downloadPath)), "the file of the url is not exists");
 
-        File file = Paths.get("D:/image/").toFile();
-
-        if (file.isDirectory() != true) new Exception();
-
-        File[] files = file.listFiles();//240,300.....
-
-        File targetFile = null;
-        for (File file1 : files) {
-            if (file1.getName().equals(filename)) {
-                targetFile = file1;
-                break;
-            }
-        }
+        File targetFile = Paths.get(downloadPath,filename).toFile();
 
         FileInputStream fis = null;
         try {

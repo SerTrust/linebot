@@ -7,5 +7,8 @@ package idv.chihyao.linebot.provider.image;
 public interface RandomImageProvider {
 
 
+    /**
+     * @return file name
+     */
     String getRandomImages();
 }
